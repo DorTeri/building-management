@@ -10,18 +10,18 @@ import {
 import { Website } from '../website/website.entity';
 
 @Entity()
+@Index(['name'], { unique: true })
 export class Publisher {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
-  @Index({ unique: true })
+  @Column({ unique: true, length: 255 })
   name: string;
 
-  @Column()
+  @Column({ length: 255 })
   email: string;
 
-  @Column()
+  @Column({ length: 255 })
   contact_name: string;
 
   @CreateDateColumn()
