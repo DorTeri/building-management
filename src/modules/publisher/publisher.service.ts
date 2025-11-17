@@ -1,59 +1,69 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import type { Cache } from 'cache-manager';
 
 import { Publisher } from './publisher.entity';
-import { Website } from '../website/website.entity';
 import { CreatePublisherDto } from './dto/create-publisher.dto';
+import { CACHE_KEYS } from 'src/constants/cache.consts';
 
 @Injectable()
 export class PublisherService {
+  private readonly logger = new Logger(PublisherService.name);
+
   constructor(
     @InjectRepository(Publisher)
     private readonly publisherRepo: Repository<Publisher>,
-
-    @InjectRepository(Website)
-    private readonly websiteRepo: Repository<Website>,
 
     @Inject(CACHE_MANAGER)
     private readonly cacheManager: Cache,
   ) {}
 
-  private async clearCache() {
-    await this.cacheManager.del('publishers');
+  async clearPublisherCache(id?: number) {
+    await this.cacheManager.del(CACHE_KEYS.publishers());
+    await this.cacheManager.del(CACHE_KEYS.publishersIncludeWebsites());
+
+    if (id) {
+      await this.cacheManager.del(CACHE_KEYS.publisher(id));
+    }
   }
 
   async findAll(includeWebsites = false): Promise<Publisher[]> {
     if (includeWebsites) {
-      return this.publisherRepo.find({ relations: ['websites'] });
+      const publishers = await this.publisherRepo.find({
+        relations: ['websites'],
+      });
+      return publishers;
     }
 
-    return this.publisherRepo.find();
+    const publishers = await this.publisherRepo.find();
+    return publishers;
   }
 
   async findOne(id: number): Promise<Publisher | null> {
-    return this.publisherRepo.findOne({
+    const publisher = await this.publisherRepo.findOne({
       where: { id },
       relations: ['websites'],
     });
+    return publisher;
   }
 
   async upsert(dto: CreatePublisherDto): Promise<Publisher> {
+    const { name, email, contact_name } = dto;
     let publisher = await this.publisherRepo.findOne({
-      where: { name: dto.name },
+      where: { name },
     });
 
     if (publisher) {
-      publisher.email = dto.email;
-      publisher.contact_name = dto.contact_name;
+      publisher.email = email;
+      publisher.contact_name = contact_name;
     } else {
       publisher = this.publisherRepo.create(dto);
     }
 
     const saved = await this.publisherRepo.save(publisher);
-    await this.clearCache();
+    await this.clearPublisherCache(saved.id);
     return saved;
   }
 
@@ -61,9 +71,12 @@ export class PublisherService {
     const result = await this.publisherRepo.delete(id);
 
     if (result.affected === 0) {
+      this.logger.error(
+        `[remove] Failed to remove publisher: Publisher with id ${id} not found`,
+      );
       throw new NotFoundException('Publisher not found');
     }
 
-    await this.clearCache();
+    await this.clearPublisherCache(id);
   }
 }
