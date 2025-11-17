@@ -227,19 +227,6 @@ npm run build
 
 The compiled JavaScript files will be in the `dist/` directory.
 
-## Environment Variables
-
-| Variable     | Description         | Default     |
-| ------------ | ------------------- | ----------- |
-| `DB_HOST`    | MySQL host          | `localhost` |
-| `DB_PORT`    | MySQL port          | `3306`      |
-| `DB_USER`    | MySQL username      | -           |
-| `DB_PASS`    | MySQL password      | -           |
-| `DB_NAME`    | MySQL database name | -           |
-| `REDIS_HOST` | Redis host          | `localhost` |
-| `REDIS_PORT` | Redis port          | `6379`      |
-| `PORT`       | Application port    | `3000`      |
-
 ## License
 
 This project is [UNLICENSED](LICENSE).
