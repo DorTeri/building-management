@@ -3,27 +3,30 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  RelationId,
 } from 'typeorm';
 import { Publisher } from '../publisher/publisher.entity';
 
 @Entity()
-@Index(['publisher_id', 'name'], { unique: true })
+@Index(['publisher', 'name'], { unique: false })
 export class Website {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  publisher_id: number;
-
   @ManyToOne(() => Publisher, (publisher) => publisher.websites, {
     onDelete: 'CASCADE',
   })
+  @JoinColumn({ name: 'publisher_id' })
   publisher: Publisher;
 
-  @Column()
+  @RelationId((website: Website) => website.publisher)
+  publisher_id: number;
+
+  @Column({ length: 255 })
   name: string;
 
   @CreateDateColumn()

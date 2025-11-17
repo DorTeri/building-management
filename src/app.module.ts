@@ -5,6 +5,8 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { PublisherModule } from './modules/publisher/publisher.module';
 import { WebsiteModule } from './modules/website/website.module';
+import { Website } from './modules/website/website.entity';
+import { Publisher } from './modules/publisher/publisher.entity';
 
 @Module({
   imports: [
@@ -18,7 +20,7 @@ import { WebsiteModule } from './modules/website/website.module';
         username: process.env.DB_USER,
         password: process.env.DB_PASS,
         database: process.env.DB_NAME,
-        entities: [],
+        entities: [Publisher, Website],
         synchronize: true,
       }),
     }),

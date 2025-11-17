@@ -8,13 +8,14 @@ import {
   Query,
   NotFoundException,
   UseInterceptors,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { PublisherService } from './publisher.service';
 import { CreatePublisherDto } from './dto/create-publisher.dto';
-import { CacheInterceptor } from '@nestjs/cache-manager';
+import { PublisherCacheInterceptor } from 'src/cache/publisher.cache.interceptor';
 
 @Controller('publisher')
-@UseInterceptors(CacheInterceptor)
+@UseInterceptors(PublisherCacheInterceptor)
 export class PublisherController {
   constructor(private readonly publisherService: PublisherService) {}
 
@@ -25,9 +26,11 @@ export class PublisherController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number) {
-    const publisher = await this.publisherService.findOne(+id);
-    if (!publisher) throw new NotFoundException('Publisher not found');
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const publisher = await this.publisherService.findOne(id);
+    if (!publisher) {
+      throw new NotFoundException('Publisher not found');
+    }
     return publisher;
   }
 
@@ -37,7 +40,7 @@ export class PublisherController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.publisherService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.publisherService.remove(id);
   }
 }
