@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8
+    container_name: bms-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bms
+      MYSQL_USER: bms_user
+      MYSQL_PASSWORD: bms_pass
+    ports:
+      - '3306:3306'
+  redis:
+    image: redis:7
+    container_name: bms-redis
+    restart: always
+    ports:
+      - '6379:6379'
