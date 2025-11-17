@@ -45,23 +45,7 @@ npm install
 ```
 
 3. Set up environment variables:
-   Create a `.env` file in the root directory with the following variables:
-
-```env
-# Database Configuration
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=bms_user
-DB_PASS=bms_pass
-DB_NAME=bms
-
-# Redis Configuration
-REDIS_HOST=localhost
-REDIS_PORT=6379
-
-# Application Configuration
-PORT=3000
-```
+   Create a `.env` file in the root directory with the provided variables based on .env.example:
 
 4. Start MySQL and Redis using Docker Compose:
 
