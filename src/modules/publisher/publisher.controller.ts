@@ -21,7 +21,10 @@ export class PublisherController {
   constructor(private readonly publisherService: PublisherService) {}
 
   @Get()
-  findAll(@Query('includeWebsites', ParseBoolPipe) includeWebsites?: boolean) {
+  findAll(
+    @Query('includeWebsites', new ParseBoolPipe({ optional: true }))
+    includeWebsites?: boolean,
+  ) {
     return this.publisherService.findAll(includeWebsites);
   }
 
