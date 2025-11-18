@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { WebsiteService } from './website.service';
 import { CreateWebsiteDto } from './dto/create-website.dto';
-import { WebsiteCacheInterceptor } from 'src/cache/website.cache.interceptor';
+import { WebsiteCacheInterceptor } from 'src/modules/cache/website.cache.interceptor';
 
 @Controller('website')
 @UseInterceptors(WebsiteCacheInterceptor)

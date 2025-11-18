@@ -7,13 +7,10 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import type { Cache } from 'cache-manager';
-
 import { Website } from './website.entity';
 import { CreateWebsiteDto } from './dto/create-website.dto';
 import { PublisherService } from '../publisher/publisher.service';
-import { CACHE_KEYS } from 'src/constants/cache.consts';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class WebsiteService {
@@ -26,21 +23,9 @@ export class WebsiteService {
     @Inject(PublisherService)
     private readonly publisherService: PublisherService,
 
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
+    @Inject(CacheService)
+    private readonly cacheService: CacheService,
   ) {}
-
-  async clearWebsiteCache(id?: number, publisherId?: number) {
-    await this.cacheManager.del(CACHE_KEYS.websites());
-
-    if (publisherId) {
-      await this.cacheManager.del(CACHE_KEYS.websitesByPublisher(publisherId));
-    }
-
-    if (id) {
-      await this.cacheManager.del(CACHE_KEYS.website(id));
-    }
-  }
 
   async findAll(): Promise<Website[]> {
     const websites = await this.websiteRepo.find();
@@ -76,8 +61,8 @@ export class WebsiteService {
 
     const saved = await this.websiteRepo.save(website);
 
-    await this.clearWebsiteCache(saved.id, publisherId);
-    await this.publisherService.clearPublisherCache(publisherId);
+    await this.cacheService.clearWebsiteCache(saved.id, publisherId);
+    await this.cacheService.clearPublisherCache(publisherId);
 
     return saved;
   }
@@ -127,7 +112,7 @@ export class WebsiteService {
 
     await this.websiteRepo.delete(id);
 
-    await this.clearWebsiteCache(id, publisherId);
-    await this.publisherService.clearPublisherCache(publisherId);
+    await this.cacheService.clearWebsiteCache(id, publisherId);
+    await this.cacheService.clearPublisherCache(publisherId);
   }
 }

@@ -7,12 +7,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import type { Cache } from 'cache-manager';
-
 import { Publisher } from './publisher.entity';
 import { CreatePublisherDto } from './dto/create-publisher.dto';
-import { CACHE_KEYS } from 'src/constants/cache.consts';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class PublisherService {
@@ -22,18 +19,9 @@ export class PublisherService {
     @InjectRepository(Publisher)
     private readonly publisherRepo: Repository<Publisher>,
 
-    @Inject(CACHE_MANAGER)
-    private readonly cacheManager: Cache,
+    @Inject(CacheService)
+    private readonly cacheService: CacheService,
   ) {}
-
-  async clearPublisherCache(id?: number) {
-    await this.cacheManager.del(CACHE_KEYS.publishers());
-    await this.cacheManager.del(CACHE_KEYS.publishersIncludeWebsites());
-
-    if (id) {
-      await this.cacheManager.del(CACHE_KEYS.publisher(id));
-    }
-  }
 
   async findAll(includeWebsites = false): Promise<Publisher[]> {
     return this.publisherRepo.find({
@@ -62,7 +50,7 @@ export class PublisherService {
 
     const saved = await this.publisherRepo.save(publisher);
 
-    await this.clearPublisherCache(saved.id);
+    await this.cacheService.clearPublisherCache(saved.id);
 
     return saved;
   }
@@ -116,6 +104,7 @@ export class PublisherService {
       throw new NotFoundException('Publisher not found');
     }
 
-    await this.clearPublisherCache(id);
+    await this.cacheService.clearPublisherCache(id);
+    await this.cacheService.clearWebsiteCache(undefined, id);
   }
 }

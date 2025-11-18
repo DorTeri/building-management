@@ -5,6 +5,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { redisStore } from 'cache-manager-redis-yet';
 import { PublisherModule } from './modules/publisher/publisher.module';
 import { WebsiteModule } from './modules/website/website.module';
+import { CacheModule as AppCacheModule } from './modules/cache/cache.module';
 import { Website } from './modules/website/website.entity';
 import { Publisher } from './modules/publisher/publisher.entity';
 
@@ -37,6 +38,8 @@ import { Publisher } from './modules/publisher/publisher.entity';
         }),
       }),
     }),
+
+    AppCacheModule,
 
     PublisherModule,
 

@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { PublisherService } from './publisher.service';
 import { CreatePublisherDto } from './dto/create-publisher.dto';
-import { PublisherCacheInterceptor } from 'src/cache/publisher.cache.interceptor';
+import { PublisherCacheInterceptor } from 'src/modules/cache/publisher.cache.interceptor';
 
 @Controller('publisher')
 @UseInterceptors(PublisherCacheInterceptor)

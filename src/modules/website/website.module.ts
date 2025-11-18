@@ -5,10 +5,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Website } from './website.entity';
 import { Publisher } from '../publisher/publisher.entity';
 import { PublisherService } from '../publisher/publisher.service';
+import { CacheService } from '../cache/cache.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Website, Publisher])],
-  providers: [WebsiteService, PublisherService],
+  providers: [WebsiteService, PublisherService, CacheService],
   controllers: [WebsiteController],
 })
 export class WebsiteModule {}
