@@ -9,6 +9,7 @@ import {
   NotFoundException,
   UseInterceptors,
   ParseIntPipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import { PublisherService } from './publisher.service';
 import { CreatePublisherDto } from './dto/create-publisher.dto';
@@ -20,9 +21,8 @@ export class PublisherController {
   constructor(private readonly publisherService: PublisherService) {}
 
   @Get()
-  findAll(@Query('includeWebsites') includeWebsites?: string) {
-    const include = includeWebsites === 'true';
-    return this.publisherService.findAll(include);
+  findAll(@Query('includeWebsites', ParseBoolPipe) includeWebsites?: boolean) {
+    return this.publisherService.findAll(includeWebsites);
   }
 
   @Get(':id')
