@@ -103,29 +103,37 @@ npm run start:debug
 src/
 ├── main.ts                 # Application entry point
 ├── app.module.ts          # Root module
-├── cache/                  # Cache interceptors
-│   ├── publisher.cache.interceptor.ts
-│   └── website.cache.interceptor.ts
 ├── constants/              # Application constants
 │   └── cache.consts.ts
 ├── modules/
+│   ├── cache/              # Cache module
+│   │   ├── cache.module.ts
+│   │   ├── cache.service.ts
+│   │   ├── publisher.cache.interceptor.ts
+│   │   └── website.cache.interceptor.ts
 │   ├── publisher/          # Publisher module
 │   │   ├── dto/
 │   │   │   └── create-publisher.dto.ts
 │   │   ├── publisher.controller.ts
+│   │   ├── publisher.controller.spec.ts
 │   │   ├── publisher.entity.ts
 │   │   ├── publisher.module.ts
-│   │   └── publisher.service.ts
+│   │   ├── publisher.service.ts
+│   │   └── publisher.service.spec.ts
 │   └── website/            # Website module
 │       ├── dto/
 │       │   └── create-website.dto.ts
 │       ├── website.controller.ts
+│       ├── website.controller.spec.ts
 │       ├── website.entity.ts
 │       ├── website.module.ts
-│       └── website.service.ts
+│       ├── website.service.ts
+│       └── website.service.spec.ts
 └── types/                  # Type definitions
     ├── publisher/
+    │   └── publisher.cache.types.ts
     └── website/
+        └── website.cache.types.ts
 ```
 
 ## Testing
@@ -196,12 +204,15 @@ docker-compose down
 
 ## Caching
 
-The application uses Redis for caching with custom interceptors:
+The application uses Redis for caching with a comprehensive caching strategy:
 
-- **PublisherCacheInterceptor**: Caches publisher-related queries
-- **WebsiteCacheInterceptor**: Caches website-related queries
+- **CacheService**: Centralized cache management service that handles cache invalidation
+  - `clearPublisherCache()`: Clears publisher-related cache entries
+  - `clearWebsiteCache()`: Clears website-related cache entries
+- **PublisherCacheInterceptor**: Automatically caches GET requests for publisher endpoints
+- **WebsiteCacheInterceptor**: Automatically caches GET requests for website endpoints
 
-Cache TTL is set to 30 seconds (30,000ms) by default.
+Cache TTL is set to 30 seconds (30,000ms) by default. The cache is automatically invalidated when data is created, updated, or deleted through the respective services.
 
 ## Code Quality
 
